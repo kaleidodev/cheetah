@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { DashboardContent } from "./_components/dashboard";
 import { DefinitionContent } from "./_components/definition";
 
 const tabs = [
@@ -112,7 +113,9 @@ export default function CreateOfferPage() {
           <DefinitionContent />
         </TabsContent>
 
-        <TabsContent value="Dashboard" />
+        <TabsContent value="Dashboard">
+          <DashboardContent />
+        </TabsContent>
       </Tabs>
     </div>
   );
