@@ -1,13 +1,20 @@
 "use client";
 
-import { CalendarDays, Eye, EyeOff } from "lucide-react";
+import { CalendarDays, Eye, EyeOff, Search } from "lucide-react";
 import { useMemo, useState } from "react";
-import { CartesianGrid, Line, LineChart, XAxis, YAxis } from "recharts";
+import { Bar, CartesianGrid, ComposedChart, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import { Calendar } from "@/components/ui/calendar";
 import { Card, CardContent } from "@/components/ui/card";
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/ui/chart";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -27,6 +34,21 @@ const chartConfig = {
   redeemed: { label: "Redeemed", color: "#4e88e5" },
 };
 
+const engagementData = [
+  { date: "OCT 14", purchaseCurrent: 780, purchaseCompare: 400, revenueCurrent: 0, revenueCompare: 0 },
+  { date: "OCT 15", purchaseCurrent: 900, purchaseCompare: 560, revenueCurrent: 7600, revenueCompare: 6800 },
+  { date: "OCT 16", purchaseCurrent: 1450, purchaseCompare: 1150, revenueCurrent: 16500, revenueCompare: 12800 },
+  { date: "OCT 17", purchaseCurrent: 790, purchaseCompare: 560, revenueCurrent: 10400, revenueCompare: 11800 },
+  { date: "OCT 18", purchaseCurrent: 770, purchaseCompare: 500, revenueCurrent: 5600, revenueCompare: 7400 },
+];
+
+const engagementChartConfig = {
+  revenueCurrent: { label: "Revenue (Current Offer)", color: "#2ab0b1" },
+  revenueCompare: { label: "Revenue (Offer_02)", color: "#f1a529" },
+  purchaseCurrent: { label: "Purchases (Current Offer)", color: "#6a95d8" },
+  purchaseCompare: { label: "Purchases (Offer_02)", color: "#8fbc7d" },
+};
+
 const metricBlocks = [
   { key: "audience", label: "Audience", value: 673, percent: null, color: "#c3c8ce", icon: null },
   { key: "issued", label: "Issued", value: 486, percent: "80%", color: "#5db8b7", icon: "off" },
@@ -34,12 +56,108 @@ const metricBlocks = [
   { key: "redeemed", label: "Redeemed", value: 183, percent: "80%", color: "#6998dd", icon: "on" },
 ] as const;
 
+function DateRangePopover({
+  rangeLabel,
+  dateOpen,
+  setDateOpen,
+  draftRange,
+  setDraftRange,
+  range,
+  setRange,
+  formatDate,
+}: {
+  rangeLabel: string;
+  dateOpen: boolean;
+  setDateOpen: (open: boolean) => void;
+  draftRange: DateRange | undefined;
+  setDraftRange: (range: DateRange | undefined) => void;
+  range: DateRange | undefined;
+  setRange: (range: DateRange | undefined) => void;
+  formatDate: (date?: Date) => string;
+}) {
+  return (
+    <Popover open={dateOpen} onOpenChange={setDateOpen}>
+      <PopoverTrigger className="inline-flex h-6 items-center gap-1 rounded border border-[#cfd7db] bg-white px-2 text-[10px] text-[#59656c]">
+        {rangeLabel}
+        <CalendarDays className="size-3" />
+      </PopoverTrigger>
+      <PopoverContent align="end" sideOffset={8} className="w-[760px] gap-0 overflow-hidden rounded border border-[#d8dfe3] bg-white p-0">
+        <div className="grid grid-cols-[120px_1fr]">
+          <div className="border-r border-[#e0e5e8] bg-[#f7f8f9] py-2 text-[10px] text-[#5f6b72]">
+            {["Today", "Yesterday", "Last 7 Days", "Last 30 Days", "Last 90 Days", "This Month", "Custom"].map((item) => (
+              <button
+                key={item}
+                type="button"
+                className={`flex h-7 w-full items-center px-3 text-left ${item === "Custom" ? "bg-[#c8eaea] font-semibold text-[#0d7f86]" : "hover:bg-[#eef2f4]"}`}
+              >
+                {item}
+              </button>
+            ))}
+          </div>
+
+          <div>
+            <div className="p-3">
+              <Calendar
+                mode="range"
+                numberOfMonths={2}
+                selected={draftRange}
+                onSelect={setDraftRange}
+                defaultMonth={draftRange?.from}
+                className="w-full p-0 [&_button[data-range-start=true]]:rounded-full [&_button[data-range-end=true]]:rounded-full [&_button[data-selected-single=true]]:rounded-full [&_button[data-range-start=true]]:bg-[#499a99] [&_button[data-range-end=true]]:bg-[#499a99] [&_button[data-selected-single=true]]:bg-[#499a99] [&_button[data-range-middle=true]]:bg-[#def2ef] [&_button[data-range-middle=true]]:text-[#2f5151] [&_button[data-range-start=true]]:text-white [&_button[data-range-end=true]]:text-white [&_button[data-selected-single=true]]:text-white"
+                classNames={{
+                  range_start:
+                    "relative isolate z-0 bg-transparent after:absolute after:inset-y-0 after:right-0 after:w-4 after:bg-[#def2ef] last:after:hidden",
+                  range_middle: "rounded-none bg-transparent",
+                  range_end:
+                    "relative isolate z-0 bg-transparent after:absolute after:inset-y-0 after:left-0 after:w-4 after:bg-[#def2ef] first:after:hidden",
+                  today: "bg-transparent text-inherit",
+                }}
+              />
+            </div>
+
+            <div className="flex items-center justify-between border-t border-[#e0e5e8] px-3 py-2 text-[10px] text-[#5f6b72]">
+              <div className="flex items-center gap-2">
+                <span>End Date</span>
+                <Switch checked size="sm" className="data-checked:bg-[#23a8a9]" />
+              </div>
+              <div>{draftRange?.from && draftRange?.to ? `${formatDate(draftRange.from)} - ${formatDate(draftRange.to)}` : ""}</div>
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setDraftRange(range);
+                    setDateOpen(false);
+                  }}
+                  className="h-7 rounded border border-[#cfd7db] bg-white px-3 text-[10px] text-[#44616b]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setRange(draftRange);
+                    setDateOpen(false);
+                  }}
+                  className="h-7 rounded border border-[#7fc6c5] bg-[#dff2ef] px-3 text-[10px] text-[#1c7d83]"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+
 export function DashboardContent() {
   const initialRange: DateRange = { from: new Date(2023, 9, 14), to: new Date(2023, 9, 18) };
   const [summaryView, setSummaryView] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
   const [range, setRange] = useState<DateRange | undefined>(initialRange);
   const [draftRange, setDraftRange] = useState<DateRange | undefined>(initialRange);
+  const [insightTab, setInsightTab] = useState<"overview" | "engagement">("overview");
 
   const formatDate = (date?: Date) => {
     if (!date) return "";
@@ -51,7 +169,7 @@ export function DashboardContent() {
   return (
     <div className="mt-3 space-y-3">
       <div className="flex items-center justify-between">
-        <Tabs defaultValue="overview">
+        <Tabs value={insightTab} onValueChange={(value) => setInsightTab(value as "overview" | "engagement")}>
           <TabsList className="h-auto gap-0 bg-transparent p-0">
             <TabsTrigger
               value="overview"
@@ -69,96 +187,141 @@ export function DashboardContent() {
         </Tabs>
 
         <div className="flex items-center gap-2 text-[11px] text-[#3f4a4f]">
-          <span>Summary View</span>
-          <Switch checked={summaryView} onCheckedChange={setSummaryView} size="sm" className="data-checked:bg-[#23a8a9]" />
-          <Popover open={dateOpen} onOpenChange={setDateOpen}>
-            <PopoverTrigger className="inline-flex h-6 items-center gap-1 rounded border border-[#cfd7db] bg-white px-2 text-[10px] text-[#59656c]">
-              {rangeLabel}
-              <CalendarDays className="size-3" />
-            </PopoverTrigger>
-            <PopoverContent align="end" sideOffset={8} className="w-[760px] gap-0 overflow-hidden rounded border border-[#d8dfe3] bg-white p-0">
-              <div className="grid grid-cols-[120px_1fr]">
-                <div className="border-r border-[#e0e5e8] bg-[#f7f8f9] py-2 text-[10px] text-[#5f6b72]">
-                  {[
-                    "Today",
-                    "Yesterday",
-                    "Last 7 Days",
-                    "Last 30 Days",
-                    "Last 90 Days",
-                    "This Month",
-                    "Custom",
-                  ].map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      className={`flex h-7 w-full items-center px-3 text-left ${item === "Custom" ? "bg-[#c8eaea] text-[#0d7f86] font-semibold" : "hover:bg-[#eef2f4]"}`}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-
-                <div>
-                  <div className="p-3">
-                    <Calendar
-                      mode="range"
-                      numberOfMonths={2}
-                      selected={draftRange}
-                      onSelect={setDraftRange}
-                      defaultMonth={draftRange?.from}
-                      className="w-full p-0 [&_button[data-range-start=true]]:rounded-full [&_button[data-range-end=true]]:rounded-full [&_button[data-selected-single=true]]:rounded-full [&_button[data-range-start=true]]:bg-[#499a99] [&_button[data-range-end=true]]:bg-[#499a99] [&_button[data-selected-single=true]]:bg-[#499a99] [&_button[data-range-middle=true]]:bg-[#def2ef] [&_button[data-range-middle=true]]:text-[#2f5151] [&_button[data-range-start=true]]:text-white [&_button[data-range-end=true]]:text-white [&_button[data-selected-single=true]]:text-white"
-                      classNames={{
-                        range_start:
-                          "relative isolate z-0 bg-transparent after:absolute after:inset-y-0 after:right-0 after:w-4 after:bg-[#def2ef] last:after:hidden",
-                        range_middle: "rounded-none bg-transparent",
-                        range_end:
-                          "relative isolate z-0 bg-transparent after:absolute after:inset-y-0 after:left-0 after:w-4 after:bg-[#def2ef] first:after:hidden",
-                        today: "bg-transparent text-inherit",
-                      }}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between border-t border-[#e0e5e8] px-3 py-2 text-[10px] text-[#5f6b72]">
-                    <div className="flex items-center gap-2">
-                      <span>End Date</span>
-                      <Switch checked size="sm" className="data-checked:bg-[#23a8a9]" />
-                    </div>
-                    <div>{draftRange?.from && draftRange?.to ? `${formatDate(draftRange.from)} - ${formatDate(draftRange.to)}` : ""}</div>
-                    <div className="flex items-center gap-2">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setDraftRange(range);
-                          setDateOpen(false);
-                        }}
-                        className="h-7 rounded border border-[#cfd7db] bg-white px-3 text-[10px] text-[#44616b]"
-                      >
-                        Cancel
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setRange(draftRange);
-                          setDateOpen(false);
-                        }}
-                        className="h-7 rounded border border-[#7fc6c5] bg-[#dff2ef] px-3 text-[10px] text-[#1c7d83]"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          {insightTab === "overview" && (
+            <>
+              <span>Summary View</span>
+              <Switch checked={summaryView} onCheckedChange={setSummaryView} size="sm" className="data-checked:bg-[#23a8a9]" />
+            </>
+          )}
+          <DateRangePopover
+            rangeLabel={rangeLabel}
+            dateOpen={dateOpen}
+            setDateOpen={setDateOpen}
+            draftRange={draftRange}
+            setDraftRange={setDraftRange}
+            range={range}
+            setRange={setRange}
+            formatDate={formatDate}
+          />
         </div>
       </div>
 
-      <PerformanceOverview summaryView={summaryView} />
+      {insightTab === "overview" ? <PerformanceOverview summaryView={summaryView} /> : <EngagementInsights />}
 
       <button type="button" className="inline-flex w-fit items-center text-[13px] font-medium text-[#0a8a8f]">
         Back to offers
       </button>
+    </div>
+  );
+}
+
+export function EngagementInsights() {
+  const [compareType, setCompareType] = useState("offer-to-offer");
+  const [compareOffer, setCompareOffer] = useState("offer-02");
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-end gap-2">
+        <div>
+          <div className="mb-1 text-[12px] font-semibold text-[#4f5f66]">Compare</div>
+          <Select value={compareType} onValueChange={(value) => setCompareType(value ?? "offer-to-offer")}>
+            <SelectTrigger className="h-9 w-[170px] rounded border border-[#d3d9dd] bg-white text-[12px] text-[#5b676d]">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent alignItemWithTrigger={false} side="bottom" align="start" className="w-[170px] text-[12px]">
+              <SelectItem value="offer-to-offer">Offer to Offer</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        <div className="w-[170px]">
+          <Select value={compareOffer} onValueChange={(value) => setCompareOffer(value ?? "offer-02")}>
+            <SelectTrigger className="h-9 w-[170px] rounded border border-[#d3d9dd] bg-white text-[12px] text-[#5b676d]">
+              <SelectValue placeholder="Select a offer" />
+            </SelectTrigger>
+            <SelectContent alignItemWithTrigger={false} side="bottom" align="start" className="w-[170px] rounded border border-[#d9dfe3] p-0 text-[12px]">
+              <div className="flex h-8 items-center border-b border-[#e2e7ea] px-2 text-[#8b959b]">
+                <span className="text-[12px]">Search Offer name</span>
+                <Search className="ml-auto size-3" />
+              </div>
+              <SelectItem value="offer-01" className="rounded-none px-3 py-1.5 text-[12px]">Offer_01</SelectItem>
+              <SelectItem value="offer-02" className="rounded-none px-3 py-1.5 text-[12px]">Offer_02</SelectItem>
+              <SelectItem value="offer-03" className="rounded-none px-3 py-1.5 text-[12px]">Offer_03</SelectItem>
+              <SelectItem value="offer-04" className="rounded-none px-3 py-1.5 text-[12px]">Offer_04</SelectItem>
+              <SelectItem value="offer-05" className="rounded-none px-3 py-1.5 text-[12px]">Offer_05</SelectItem>
+              <SelectItem value="offer-06" className="rounded-none px-3 py-1.5 text-[12px]">Offer_06</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+      </div>
+
+      <div className="rounded border border-[#d9dfe3] bg-white">
+        <Table className="text-[12px]">
+          <TableHeader>
+            <TableRow className="bg-[#eef1f2] hover:bg-[#eef1f2]">
+              <TableHead className="h-7 w-[170px] text-[12px] text-[#4f5f66]" />
+              <TableHead className="h-7 text-[12px] text-[#4f5f66]">Purchases</TableHead>
+              <TableHead className="h-7 text-[12px] text-[#4f5f66]">Revenue</TableHead>
+              <TableHead className="h-7 text-[12px] text-[#4f5f66]">AOV</TableHead>
+              <TableHead className="h-7 text-[12px] text-[#4f5f66]">Lift</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            <TableRow>
+              <TableCell>Current offer</TableCell>
+              <TableCell>1272</TableCell>
+              <TableCell>$236,540</TableCell>
+              <TableCell>$185.92</TableCell>
+              <TableCell className="text-[#99a4ab]">No offer selected</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell>Offer_02</TableCell>
+              <TableCell>626</TableCell>
+              <TableCell>$68,865</TableCell>
+              <TableCell>$110.01</TableCell>
+              <TableCell className="text-[#2ea65f]">↗ $167,675</TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+
+        <div className="border-t border-[#d9dfe3] p-3">
+          <ChartContainer config={engagementChartConfig} className="h-[300px] w-full">
+            <ComposedChart data={engagementData} margin={{ top: 14, right: 14, left: 8, bottom: 8 }}>
+              <CartesianGrid vertical={false} stroke="#edf1f3" />
+              <XAxis dataKey="date" tickLine={false} axisLine={{ stroke: "#d7dee2" }} tick={{ fontSize: 10, fill: "#8a959b" }} />
+              <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#8a959b" }} />
+              <YAxis
+                yAxisId="right"
+                orientation="right"
+                tickLine={false}
+                axisLine={false}
+                tick={{ fontSize: 10, fill: "#8a959b" }}
+                tickFormatter={(v) => (v === 0 ? "0" : `${Math.round(v / 1000)}k`)}
+              />
+              <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
+              <Bar yAxisId="left" dataKey="purchaseCurrent" fill="#6a95d8" barSize={30} />
+              <Bar yAxisId="left" dataKey="purchaseCompare" fill="#8fbc7d" barSize={30} />
+              <Line yAxisId="right" type="monotone" dataKey="revenueCurrent" stroke="#2ab0b1" strokeWidth={2} dot={{ r: 2 }} />
+              <Line yAxisId="right" type="monotone" dataKey="revenueCompare" stroke="#f1a529" strokeWidth={2} dot={{ r: 2 }} />
+            </ComposedChart>
+          </ChartContainer>
+
+          <div className="mt-1 flex items-center gap-5 px-2 pb-1 text-[10px] text-[#4f5f66]">
+            <span className="inline-flex items-center gap-1">
+              <span className="size-2 bg-[#2ab0b1]" />Revenue (Current Offer)
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="size-2 bg-[#f1a529]" />Revenue (Offer_02)
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="size-2 bg-[#6a95d8]" />Purchases (Current Offer)
+            </span>
+            <span className="inline-flex items-center gap-1">
+              <span className="size-2 bg-[#8fbc7d]" />Purchases (Offer_02)
+            </span>
+          </div>
+        </div>
+      </div>
     </div>
   );
 }
@@ -200,6 +363,7 @@ export function PerformanceOverview({ summaryView }: { summaryView: boolean }) {
       return `M ${x0} ${height} L ${x0} ${y0} L ${x1} ${y0} L ${x1} ${height} Z`;
     });
   }, [blockHeights]);
+
   return (
     <>
       <div className="grid grid-cols-3 gap-3">
@@ -331,5 +495,5 @@ export function PerformanceOverview({ summaryView }: { summaryView: boolean }) {
         )}
       </div>
     </>
-  )
+  );
 }
