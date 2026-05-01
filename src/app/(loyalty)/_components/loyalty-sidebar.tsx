@@ -52,7 +52,7 @@ const sideNavItems: SideNavItem[] = [
 ];
 
 function isOffersActive(pathname: string, item: SideNavItem) {
-  return item.label === "Offers" && pathname === "/";
+  return item.label === "Offers";
 }
 
 export function LoyaltySidebar() {

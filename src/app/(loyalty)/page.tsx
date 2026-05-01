@@ -13,6 +13,7 @@ import {
   Rocket,
   X,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -59,6 +60,7 @@ const offerTypeOptions = [
 ];
 
 export default function CampaignsPage() {
+  const router = useRouter();
   const [layout, setLayout] = useState<"grid" | "list">("grid");
   const [offerType, setOfferType] = useState<string | null>(null);
   const [createOfferActive, setCreateOfferActive] = useState(false);
@@ -106,12 +108,13 @@ export default function CampaignsPage() {
             </SelectContent>
           </Select>
           <Button
+            type="button"
             variant="outline"
             onMouseEnter={() => setCreateOfferActive(true)}
             onMouseLeave={() => setCreateOfferActive(false)}
             onMouseDown={() => setCreateOfferActive(true)}
             onMouseUp={() => setCreateOfferActive(false)}
-            onClick={() => setCreateOfferActive((prev) => !prev)}
+            onClick={() => router.push("/create")}
             className={`h-10 min-h-10 rounded border px-3 text-[14px] font-semibold leading-none transition-colors ${
               createOfferActive
                 ? "border-[#5ca5a4] bg-[#def2ef]! text-[#2f757a]"
