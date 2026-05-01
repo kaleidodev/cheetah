@@ -49,8 +49,19 @@ function ToolbarSelect({ label, wide }: { label: string; wide?: boolean }) {
   );
 }
 
+const offerTypeOptions = [
+  { value: "no-action", label: "No Action" },
+  { value: "barcode", label: "Barcode" },
+  { value: "certificate", label: "Certificate" },
+  { value: "coupon", label: "Coupon" },
+  { value: "url", label: "URL" },
+  { value: "content", label: "Content" },
+];
+
 export default function CampaignsPage() {
   const [layout, setLayout] = useState<"grid" | "list">("grid");
+  const [offerType, setOfferType] = useState<string | null>(null);
+  const [createOfferActive, setCreateOfferActive] = useState(false);
 
   return (
     <div className="flex h-full min-h-0 flex-col bg-white px-10 py-8">
@@ -73,17 +84,43 @@ export default function CampaignsPage() {
           <div className="w-[220px]">
             <ToolbarInput placeholder="Enter Display name" />
           </div>
-          <Select>
-            <SelectTrigger className="h-10! min-w-[170px] rounded border border-[#c7ced2] bg-[#f3f5f6] px-3 text-[15px] font-medium text-[#a5afb5] shadow-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 data-placeholder:text-[#a5afb5]">
+          <Select value={offerType} onValueChange={setOfferType}>
+            <SelectTrigger className="h-10! min-w-[170px] rounded border border-[#c7ced2] bg-[#f3f5f6] px-3 text-[15px] font-medium text-[#a5afb5] shadow-none focus:ring-0 focus:ring-offset-0 focus-visible:ring-0 data-placeholder:text-[#a5afb5] data-[state=open]:border-[#5ca5a4] data-[state=open]:bg-[#def2ef]">
               <SelectValue placeholder="Select Offer Type" />
             </SelectTrigger>
+            <SelectContent
+              alignItemWithTrigger={false}
+              side="bottom"
+              align="start"
+              className="min-w-[170px] rounded border border-[#d6dde1] bg-white p-0"
+            >
+              {offerTypeOptions.map((option) => (
+                <SelectItem
+                  key={option.value}
+                  value={option.value}
+                  className="cursor-pointer rounded-none px-3 py-1.5 text-[14px] text-[#5f6d75] focus:bg-[#def2ef] focus:text-[#4e7981] data-[state=checked]:bg-[#def2ef] data-[state=checked]:text-[#4e7981]"
+                >
+                  {option.label}
+                </SelectItem>
+              ))}
+            </SelectContent>
           </Select>
           <Button
             variant="outline"
-            className="h-10 min-h-10 rounded border-[#aeb6bb] bg-[#eceeef] px-4 text-[15px] font-semibold leading-none text-[#adb6bc] hover:bg-[#e5e8ea]"
+            onMouseEnter={() => setCreateOfferActive(true)}
+            onMouseLeave={() => setCreateOfferActive(false)}
+            onMouseDown={() => setCreateOfferActive(true)}
+            onMouseUp={() => setCreateOfferActive(false)}
+            onClick={() => setCreateOfferActive((prev) => !prev)}
+            className={`h-10 min-h-10 rounded border px-3 text-[14px] font-semibold leading-none transition-colors ${
+              createOfferActive
+                ? "border-[#5ca5a4] bg-[#def2ef]! text-[#2f757a]"
+                : "border-[#aeb6bb] bg-[#eceeef] text-[#8f9aa1] hover:border-[#5ca5a4] hover:bg-[#dff1f2] hover:text-[#2f757a]"
+            }`}
           >
-            <Plus className="mr-2 size-4" />
-            Create Offer
+            <Plus className={`mr-1 size-4 ${createOfferActive ? "text-[#2f757a]" : "text-[#8f9aa1]"}`} />
+            <span className={`${createOfferActive ? "text-[#2f757a]" : "text-[#8f9aa1]"}`}>Create Offer</span>
+            <ChevronDown className={`ml-1 size-3 ${createOfferActive ? "text-[#2f757a]" : "text-[#8f9aa1]"}`} />
           </Button>
         </div>
 
