@@ -7,6 +7,7 @@ export type OfferItem = {
   couponType: string;
   publishedAt: string;
   responses: string;
+  image: string;
 };
 
 export const offerItems: OfferItem[] = [
@@ -19,6 +20,7 @@ export const offerItems: OfferItem[] = [
     couponType: "Coupon",
     publishedAt: "Published: April 10, 2024 9:03 PM (CDT)",
     responses: "200 Responses",
+    image: "/offers/offer-1.png",
   },
   {
     name: "September Offer",
@@ -29,6 +31,7 @@ export const offerItems: OfferItem[] = [
     couponType: "Coupon",
     publishedAt: "Published: April 10, 2024 9:03 PM (CDT)",
     responses: "200 Responses",
+    image: "/offers/offer-2.png",
   },
   {
     name: "September Offer",
@@ -39,6 +42,7 @@ export const offerItems: OfferItem[] = [
     couponType: "Coupon",
     publishedAt: "Published: April 10, 2024 9:03 PM (CDT)",
     responses: "200 Responses",
+    image: "/offers/offer-3.png",
   },
   {
     name: "September Offer",
@@ -49,6 +53,7 @@ export const offerItems: OfferItem[] = [
     couponType: "Coupon",
     publishedAt: "Published: April 10, 2024 9:03 PM (CDT)",
     responses: "200 Responses",
+    image: "/offers/offer-4.png",
   },
   {
     name: "September Offer",
@@ -59,5 +64,6 @@ export const offerItems: OfferItem[] = [
     couponType: "Coupon",
     publishedAt: "Published: April 10, 2024 9:03 PM (CDT)",
     responses: "200 Responses",
+    image: "/offers/offer-5.png",
   },
 ];

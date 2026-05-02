@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useMemo, useState } from "react";
 
 import { OfferItem } from "@/lib/offers/types";
@@ -44,7 +45,9 @@ export function OffersList({ items }: { items: OfferItem[] }) {
             className="rounded-sm border border-[#eceff1] bg-[#f5f6f7] px-4 py-4"
           >
             <div className="flex items-start gap-6">
-              <div className="h-[140px] w-[160px] shrink-0 border border-[#dde2e5] bg-white" />
+              <div className="relative h-[140px] w-[160px] shrink-0 overflow-hidden border border-[#dde2e5] bg-white">
+                <Image src={item.image} alt={item.name} fill className="object-cover" sizes="160px" />
+              </div>
 
               <div className="min-w-0 flex-1">
                 <h2 className="truncate text-[18px] leading-none font-bold tracking-tight text-[#14181b]">

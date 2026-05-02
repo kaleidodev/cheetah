@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import {
   MessageCircleMore,
   Mail,
@@ -51,23 +50,21 @@ const sideNavItems: SideNavItem[] = [
   { label: "Settings", icon: Settings, hasChevron: true },
 ];
 
-function isOffersActive(pathname: string, item: SideNavItem) {
+function isOffersActive(item: SideNavItem) {
   return item.label === "Offers";
 }
 
 export function LoyaltySidebar() {
-  const pathname = usePathname();
-
   return (
     <Sidebar collapsible="none" className="w-[230px] border-r bg-white">
       <SidebarContent>
         <SidebarMenu className="py-3" aria-label="Loyalty sidebar">
           {sideNavItems.map((item) => {
-            const active = isOffersActive(pathname, item);
+            const active = isOffersActive(item);
             const Icon = item.icon;
             const itemClassName = cn(
-              "mx-2 mb-0.5 flex h-10 items-center gap-2.5 rounded px-5 text-[14px] font-semibold leading-none tracking-tight text-[#516068] transition-colors",
-              active ? "bg-[#dceced] text-[#3a737d]" : "hover:bg-[#e9eff0] hover:text-[#3f6972]"
+              "mx-2 mb-0.5 flex h-10 items-center gap-2.5 rounded px-5 text-[14px] leading-none tracking-tight text-[#516068] transition-colors",
+              active ? "bg-[#dceced] font-bold text-[#3a737d]" : "font-semibold hover:bg-[#e9eff0] hover:text-[#3f6972]"
             );
 
             return (
@@ -80,7 +77,6 @@ export function LoyaltySidebar() {
                       <div />
                     )
                   }
-                  isActive={active}
                   className={itemClassName}
                 >
                   <Icon className="size-[17px] shrink-0" />
