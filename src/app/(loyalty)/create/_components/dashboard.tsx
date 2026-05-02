@@ -1,8 +1,9 @@
 "use client";
 
 import { CalendarDays, ChevronLeft, Eye, EyeOff, Search } from "lucide-react";
-import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { useEffect, useMemo, useState } from "react";
+import type { DateRange } from "react-day-picker";
 import { Bar, CartesianGrid, ComposedChart, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import { Calendar } from "@/components/ui/calendar";
@@ -19,7 +20,6 @@ import {
 import { Switch } from "@/components/ui/switch";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { DateRange } from "react-day-picker";
 
 const trendData = [
   { date: "OCT 14", issued: 2500, clipped: 2000, redeemed: 2000 },
@@ -66,6 +66,7 @@ function DateRangePopover({
   range,
   setRange,
   formatDate,
+  months,
 }: {
   rangeLabel: string;
   dateOpen: boolean;
@@ -75,16 +76,17 @@ function DateRangePopover({
   range: DateRange | undefined;
   setRange: (range: DateRange | undefined) => void;
   formatDate: (date?: Date) => string;
+  months: 1 | 2;
 }) {
   return (
     <Popover open={dateOpen} onOpenChange={setDateOpen}>
-      <PopoverTrigger className="inline-flex h-6 items-center gap-1 rounded border border-[#cfd7db] bg-white px-2 text-[10px] text-[#59656c]">
+      <PopoverTrigger className="inline-flex h-8 w-full items-center justify-between gap-1 rounded border border-[#cfd7db] bg-white px-2 text-[10px] text-[#59656c] sm:h-6 sm:w-auto sm:justify-start">
         {rangeLabel}
         <CalendarDays className="size-3" />
       </PopoverTrigger>
-      <PopoverContent align="end" sideOffset={8} className="w-[760px] gap-0 overflow-hidden rounded border border-[#d8dfe3] bg-white p-0">
-        <div className="grid grid-cols-[120px_1fr]">
-          <div className="border-r border-[#e0e5e8] bg-[#f7f8f9] py-2 text-[10px] text-[#5f6b72]">
+      <PopoverContent align="end" sideOffset={8} className="w-[calc(100vw-2rem)] max-w-[760px] gap-0 overflow-hidden rounded border border-[#d8dfe3] bg-white p-0 sm:w-auto">
+        <div className="grid grid-cols-1 md:grid-cols-[120px_1fr]">
+          <div className="border-b border-[#e0e5e8] bg-[#f7f8f9] py-2 text-[10px] text-[#5f6b72] md:border-r md:border-b-0">
             {["Today", "Yesterday", "Last 7 Days", "Last 30 Days", "Last 90 Days", "This Month", "Custom"].map((item) => (
               <button
                 key={item}
@@ -100,7 +102,7 @@ function DateRangePopover({
             <div className="p-3">
               <Calendar
                 mode="range"
-                numberOfMonths={2}
+                numberOfMonths={months}
                 selected={draftRange}
                 onSelect={setDraftRange}
                 defaultMonth={draftRange?.from}
@@ -116,13 +118,13 @@ function DateRangePopover({
               />
             </div>
 
-            <div className="flex items-center justify-between border-t border-[#e0e5e8] px-3 py-2 text-[10px] text-[#5f6b72]">
+            <div className="flex flex-col gap-3 border-t border-[#e0e5e8] px-3 py-2 text-[10px] text-[#5f6b72] md:flex-row md:items-center md:justify-between md:gap-2">
               <div className="flex items-center gap-2">
                 <span>End Date</span>
                 <Switch checked size="sm" className="data-checked:bg-[#23a8a9]" />
               </div>
-              <div>{draftRange?.from && draftRange?.to ? `${formatDate(draftRange.from)} - ${formatDate(draftRange.to)}` : ""}</div>
-              <div className="flex items-center gap-2">
+              <div className="break-words">{draftRange?.from && draftRange?.to ? `${formatDate(draftRange.from)} - ${formatDate(draftRange.to)}` : ""}</div>
+              <div className="flex items-center gap-2 self-end md:self-auto">
                 <button
                   type="button"
                   onClick={() => {
@@ -160,6 +162,14 @@ export function DashboardContent() {
   const [range, setRange] = useState<DateRange | undefined>(initialRange);
   const [draftRange, setDraftRange] = useState<DateRange | undefined>(initialRange);
   const [insightTab, setInsightTab] = useState<"overview" | "engagement">("overview");
+  const [calendarMonths, setCalendarMonths] = useState<1 | 2>(2);
+
+  useEffect(() => {
+    const updateCalendarMonths = () => setCalendarMonths(window.innerWidth < 768 ? 1 : 2);
+    updateCalendarMonths();
+    window.addEventListener("resize", updateCalendarMonths);
+    return () => window.removeEventListener("resize", updateCalendarMonths);
+  }, []);
 
   const formatDate = (date?: Date) => {
     if (!date) return "";
@@ -170,41 +180,44 @@ export function DashboardContent() {
 
   return (
     <div className="mt-3 space-y-3">
-      <div className="flex items-center justify-between">
-        <Tabs value={insightTab} onValueChange={(value) => setInsightTab(value as "overview" | "engagement")}>
-          <TabsList className="h-auto gap-0 bg-transparent p-0">
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        <Tabs value={insightTab} onValueChange={(value) => setInsightTab(value as "overview" | "engagement")} className="w-full lg:w-auto">
+          <TabsList className="grid h-auto w-full grid-cols-1 gap-2 bg-transparent p-0 sm:grid-cols-2 sm:gap-0">
             <TabsTrigger
               value="overview"
-              className="inline-flex h-10 rounded-l-lg rounded-r-none border border-[#d2d8dc] bg-[#f2f4f5] px-4 text-[12px] font-semibold tracking-tight text-[#aeb7bc] data-active:border-2 data-active:border-[#2ea6a9] data-active:bg-[#dff1f2] data-active:text-[#3a737d] data-active:shadow-none after:hidden"
+              className="inline-flex h-10 rounded-lg border border-[#d2d8dc] bg-[#f2f4f5] px-4 text-[12px] font-semibold tracking-tight text-[#aeb7bc] data-active:border-2 data-active:border-[#2ea6a9] data-active:bg-[#dff1f2] data-active:text-[#3a737d] data-active:shadow-none after:hidden sm:rounded-l-lg sm:rounded-r-none"
             >
               Performance Overview
             </TabsTrigger>
             <TabsTrigger
               value="engagement"
-              className="inline-flex h-10 rounded-r-lg rounded-l-none border border-[#d2d8dc] bg-[#f2f4f5] px-4 text-[12px] font-semibold tracking-tight text-[#aeb7bc] data-active:border-2 data-active:border-[#2ea6a9] data-active:bg-[#dff1f2] data-active:text-[#3a737d] data-active:shadow-none after:hidden"
+              className="inline-flex h-10 rounded-lg border border-[#d2d8dc] bg-[#f2f4f5] px-4 text-[12px] font-semibold tracking-tight text-[#aeb7bc] data-active:border-2 data-active:border-[#2ea6a9] data-active:bg-[#dff1f2] data-active:text-[#3a737d] data-active:shadow-none after:hidden sm:rounded-r-lg sm:rounded-l-none"
             >
               Engagement Insights
             </TabsTrigger>
           </TabsList>
         </Tabs>
 
-        <div className="flex items-center gap-2 text-[11px] text-[#3f4a4f]">
+        <div className="flex flex-col gap-2 text-[11px] text-[#3f4a4f] sm:flex-row sm:flex-wrap sm:items-center lg:justify-end">
           {insightTab === "overview" && (
-            <>
+            <div className="flex items-center justify-between rounded border border-[#d8dde0] bg-white px-3 py-2 sm:border-0 sm:bg-transparent sm:p-0">
               <span>Summary View</span>
               <Switch checked={summaryView} onCheckedChange={setSummaryView} size="sm" className="data-checked:bg-[#23a8a9]" />
-            </>
+            </div>
           )}
-          <DateRangePopover
-            rangeLabel={rangeLabel}
-            dateOpen={dateOpen}
-            setDateOpen={setDateOpen}
-            draftRange={draftRange}
-            setDraftRange={setDraftRange}
-            range={range}
-            setRange={setRange}
-            formatDate={formatDate}
-          />
+          <div className="w-full sm:w-auto">
+            <DateRangePopover
+              rangeLabel={rangeLabel}
+              dateOpen={dateOpen}
+              setDateOpen={setDateOpen}
+              draftRange={draftRange}
+              setDraftRange={setDraftRange}
+              range={range}
+              setRange={setRange}
+              formatDate={formatDate}
+              months={calendarMonths}
+            />
+          </div>
         </div>
       </div>
 
@@ -224,11 +237,11 @@ export function EngagementInsights() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-end gap-2">
-        <div>
+      <div className="flex flex-col gap-2 sm:flex-row sm:items-end">
+        <div className="w-full sm:w-auto">
           <div className="mb-1 text-[12px] font-semibold text-[#4f5f66]">Compare</div>
           <Select value={compareType} onValueChange={(value) => setCompareType(value ?? "offer-to-offer")}>
-            <SelectTrigger className="h-9 w-[170px] rounded border border-[#d3d9dd] bg-white text-[12px] text-[#5b676d]">
+            <SelectTrigger className="h-9 w-full sm:w-[170px] rounded border border-[#d3d9dd] bg-white text-[12px] text-[#5b676d]">
               <SelectValue />
             </SelectTrigger>
             <SelectContent alignItemWithTrigger={false} side="bottom" align="start" className="w-[170px] text-[12px]">
@@ -237,9 +250,9 @@ export function EngagementInsights() {
           </Select>
         </div>
 
-        <div className="w-[170px]">
+        <div className="w-full sm:w-[170px]">
           <Select value={compareOffer} onValueChange={(value) => setCompareOffer(value ?? "offer-02")}>
-            <SelectTrigger className="h-9 w-[170px] rounded border border-[#d3d9dd] bg-white text-[12px] text-[#5b676d]">
+            <SelectTrigger className="h-9 w-full sm:w-[170px] rounded border border-[#d3d9dd] bg-white text-[12px] text-[#5b676d]">
               <SelectValue placeholder="Select a offer" />
             </SelectTrigger>
             <SelectContent alignItemWithTrigger={false} side="bottom" align="start" className="w-[170px] rounded border border-[#d9dfe3] p-0 text-[12px]">
@@ -288,28 +301,30 @@ export function EngagementInsights() {
         </Table>
 
         <div className="border-t border-[#d9dfe3] p-3">
-          <ChartContainer config={engagementChartConfig} className="h-[300px] w-full">
-            <ComposedChart data={engagementData} margin={{ top: 14, right: 14, left: 8, bottom: 8 }}>
-              <CartesianGrid vertical={false} stroke="#edf1f3" />
-              <XAxis dataKey="date" tickLine={false} axisLine={{ stroke: "#d7dee2" }} tick={{ fontSize: 10, fill: "#8a959b" }} />
-              <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#8a959b" }} />
-              <YAxis
-                yAxisId="right"
-                orientation="right"
-                tickLine={false}
-                axisLine={false}
-                tick={{ fontSize: 10, fill: "#8a959b" }}
-                tickFormatter={(v) => (v === 0 ? "0" : `${Math.round(v / 1000)}k`)}
-              />
-              <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
-              <Bar yAxisId="left" dataKey="purchaseCurrent" fill="#6a95d8" barSize={30} />
-              <Bar yAxisId="left" dataKey="purchaseCompare" fill="#8fbc7d" barSize={30} />
-              <Line yAxisId="right" type="monotone" dataKey="revenueCurrent" stroke="#2ab0b1" strokeWidth={2} dot={{ r: 2 }} />
-              <Line yAxisId="right" type="monotone" dataKey="revenueCompare" stroke="#f1a529" strokeWidth={2} dot={{ r: 2 }} />
-            </ComposedChart>
-          </ChartContainer>
+          <div className="overflow-x-auto">
+            <ChartContainer config={engagementChartConfig} className="h-[280px] min-w-[560px] w-full sm:h-[300px]">
+              <ComposedChart data={engagementData} margin={{ top: 14, right: 14, left: 8, bottom: 16 }}>
+                <CartesianGrid vertical={false} stroke="#edf1f3" />
+                <XAxis dataKey="date" tickLine={false} axisLine={{ stroke: "#d7dee2" }} tick={{ fontSize: 10, fill: "#8a959b" }} />
+                <YAxis yAxisId="left" tickLine={false} axisLine={false} tick={{ fontSize: 10, fill: "#8a959b" }} />
+                <YAxis
+                  yAxisId="right"
+                  orientation="right"
+                  tickLine={false}
+                  axisLine={false}
+                  tick={{ fontSize: 10, fill: "#8a959b" }}
+                  tickFormatter={(v) => (v === 0 ? "0" : `${Math.round(v / 1000)}k`)}
+                />
+                <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
+                <Bar yAxisId="left" dataKey="purchaseCurrent" fill="#6a95d8" barSize={30} />
+                <Bar yAxisId="left" dataKey="purchaseCompare" fill="#8fbc7d" barSize={30} />
+                <Line yAxisId="right" type="monotone" dataKey="revenueCurrent" stroke="#2ab0b1" strokeWidth={2} dot={{ r: 2 }} />
+                <Line yAxisId="right" type="monotone" dataKey="revenueCompare" stroke="#f1a529" strokeWidth={2} dot={{ r: 2 }} />
+              </ComposedChart>
+            </ChartContainer>
+          </div>
 
-          <div className="mt-1 flex items-center gap-5 px-2 pb-1 text-[10px] text-[#4f5f66]">
+          <div className="mt-1 flex flex-wrap items-center gap-3 px-2 pb-1 text-[10px] text-[#4f5f66] md:gap-5">
             <span className="inline-flex items-center gap-1">
               <span className="size-2 bg-[#2ab0b1]" />Revenue (Current Offer)
             </span>
@@ -369,7 +384,7 @@ export function PerformanceOverview({ summaryView }: { summaryView: boolean }) {
 
   return (
     <>
-      <div className="grid grid-cols-3 gap-3">
+      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
         <Card className="h-[124px] rounded-none bg-[#f3f4f5] py-4 shadow-none ring-1 ring-[#e0e5e8]">
           <CardContent className="px-4 text-center">
             <div className="text-[11px] text-[#5f6b72]">Purchases</div>
@@ -391,7 +406,7 @@ export function PerformanceOverview({ summaryView }: { summaryView: boolean }) {
       </div>
 
       <div className="rounded-sm border border-[#d9dfe3] bg-white">
-        <div className="grid grid-cols-4 border-b border-[#d9dfe3]">
+        <div className="grid grid-cols-2 border-b border-[#d9dfe3] lg:grid-cols-4">
           {metricBlocks.map((item) => (
             <div key={item.key} className="border-r border-[#d9dfe3] px-3 py-2 last:border-r-0">
               <div className="flex items-center justify-between text-[10px] text-[#5f6b72]">
@@ -406,12 +421,13 @@ export function PerformanceOverview({ summaryView }: { summaryView: boolean }) {
         </div>
 
         <div className="relative h-[86px] overflow-hidden border-b border-[#d9dfe3] bg-[#f5f6f7]">
-          <svg viewBox="0 0 1000 86" preserveAspectRatio="none" className="h-full w-full">
+          <svg viewBox="0 0 1000 86" preserveAspectRatio="none" className="h-full w-full" aria-label="Offer metrics overview">
+            <title>Offer metrics overview</title>
             {metricBlocks.map((item, index) => (
               <path key={item.key} d={areaPaths[index]} fill={item.color} />
             ))}
           </svg>
-          <div className="pointer-events-none absolute inset-0 grid grid-cols-4">
+          <div className="pointer-events-none absolute inset-0 grid grid-cols-2 lg:grid-cols-4">
             {metricBlocks.map((item) => (
               <div key={`${item.key}-divider`} className="border-r border-[#d9dfe3] last:border-r-0" />
             ))}
@@ -420,23 +436,25 @@ export function PerformanceOverview({ summaryView }: { summaryView: boolean }) {
 
         {!summaryView ? (
           <div className="p-3 pb-1">
-            <ChartContainer config={chartConfig} className="h-[300px] w-full">
-              <LineChart data={trendData} margin={{ top: 12, right: 10, left: 8, bottom: 10 }}>
-                <CartesianGrid vertical={false} stroke="#edf1f3" />
-                <XAxis dataKey="date" tickLine={false} axisLine={{ stroke: "#d7dee2" }} tick={{ fontSize: 10, fill: "#8a959b" }} />
-                <YAxis
-                  tickLine={false}
-                  axisLine={false}
-                  tick={{ fontSize: 10, fill: "#8a959b" }}
-                  tickFormatter={(value) => (value === 0 ? "0" : `${Math.round(value / 1000)}k`)}
-                />
-                <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
-                <Line type="monotone" dataKey="issued" stroke="var(--color-issued)" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 3 }} />
-                <Line type="monotone" dataKey="clipped" stroke="var(--color-clipped)" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 3 }} />
-                <Line type="monotone" dataKey="redeemed" stroke="var(--color-redeemed)" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 3 }} />
-              </LineChart>
-            </ChartContainer>
-            <div className="mt-1 flex items-center gap-5 px-2 pb-2 text-[10px] text-[#4f5f66]">
+            <div className="overflow-x-auto">
+              <ChartContainer config={chartConfig} className="h-[300px] min-w-[560px] w-full">
+                <LineChart data={trendData} margin={{ top: 12, right: 10, left: 8, bottom: 16 }}>
+                  <CartesianGrid vertical={false} stroke="#edf1f3" />
+                  <XAxis dataKey="date" tickLine={false} axisLine={{ stroke: "#d7dee2" }} tick={{ fontSize: 10, fill: "#8a959b" }} />
+                  <YAxis
+                    tickLine={false}
+                    axisLine={false}
+                    tick={{ fontSize: 10, fill: "#8a959b" }}
+                    tickFormatter={(value) => (value === 0 ? "0" : `${Math.round(value / 1000)}k`)}
+                  />
+                  <ChartTooltip content={<ChartTooltipContent indicator="line" />} />
+                  <Line type="monotone" dataKey="issued" stroke="var(--color-issued)" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="clipped" stroke="var(--color-clipped)" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 3 }} />
+                  <Line type="monotone" dataKey="redeemed" stroke="var(--color-redeemed)" strokeWidth={2} dot={{ r: 2 }} activeDot={{ r: 3 }} />
+                </LineChart>
+              </ChartContainer>
+            </div>
+            <div className="mt-1 flex flex-wrap items-center gap-3 px-2 pb-2 text-[10px] text-[#4f5f66] md:gap-5">
               <span className="inline-flex items-center gap-1">
                 <span className="size-2 bg-[#2ab0b1]" />Issued
               </span>

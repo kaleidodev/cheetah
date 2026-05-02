@@ -12,6 +12,7 @@ import {
   SheetTitle,
   SheetTrigger,
 } from "@/components/ui/sheet";
+import { SidebarTrigger } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
 type TopNavItem = {
@@ -37,11 +38,13 @@ export function LoyaltyHeader() {
   return (
     <header className="border-b border-[#d9dde0] bg-white">
       <div className="flex min-h-[68px] items-center gap-3 px-4">
+        <SidebarTrigger className="size-9 shrink-0 rounded-md text-[#5f6d74] hover:bg-[#eef1f3] hover:text-[#44535a] md:hidden" />
+
         <Button
           variant="ghost"
           size="icon"
           aria-label="Open app switcher"
-          className="size-9 shrink-0 rounded-md text-[#5f6d74] hover:bg-[#eef1f3] hover:text-[#44535a]"
+          className="hidden size-9 shrink-0 rounded-md text-[#5f6d74] hover:bg-[#eef1f3] hover:text-[#44535a] md:inline-flex"
         >
           <GripIcon className="size-7" strokeWidth={2.1} />
         </Button>

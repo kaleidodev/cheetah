@@ -10,12 +10,12 @@ export default function CampaignsLayout({
 }) {
   return (
     <div className="min-h-screen bg-background">
-      <LoyaltyHeader />
-      <SidebarProvider className="min-h-0">
-        <div className="flex w-full flex-1 min-h-[calc(100vh-68px)]">
+      <SidebarProvider className="flex-col items-stretch">
+        <LoyaltyHeader />
+        <div className="flex flex-1 items-start">
           <LoyaltySidebar />
-          <SidebarInset className="min-w-0 flex-1 bg-transparent">
-            <main className="min-w-0 w-full flex-1">{children}</main>
+          <SidebarInset className="bg-transparent">
+            {children}
           </SidebarInset>
         </div>
       </SidebarProvider>

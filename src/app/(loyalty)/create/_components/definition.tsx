@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { ChevronDown, ChevronRight, Lock, Paperclip, Plus } from "lucide-react";
 import { useState } from "react";
 
@@ -95,8 +96,8 @@ function InlineTagField({
 
 function Row({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
-    <div className="grid grid-cols-[130px_1fr] items-center gap-3">
-      <label className="text-right text-[11px] font-semibold text-[#546167]">{label}</label>
+    <div className="grid grid-cols-1 gap-2 md:grid-cols-[130px_1fr] md:items-center md:gap-3">
+      <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">{label}</div>
       {children}
     </div>
   );
@@ -113,22 +114,22 @@ function OfferDetailsContent() {
       <div className="space-y-3">
         <Row
           label={
-            <span className="inline-flex items-center justify-end gap-1">
+            <span className="inline-flex items-center gap-1 md:justify-end">
               Display Name
-              <img src="/globe2.svg" alt="globe" className="size-4" />
+              <Image src="/globe2.svg" alt="globe" width={16} height={16} className="size-4" />
             </span>
           }
         >
           <Input value="July 5% Off" readOnly className="h-8 border-[#d3d9dd] bg-white text-[12px]" />
         </Row>
 
-        <div className="grid grid-cols-[130px_1fr] items-start gap-3">
-          <label className="pt-2 text-right text-[11px] font-semibold text-[#546167]">
-            <span className="inline-flex items-center justify-end gap-1">
+        <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr] md:gap-3">
+          <div className="pt-0 text-left text-[11px] font-semibold text-[#546167] md:pt-2 md:text-right">
+            <span className="inline-flex items-center gap-1 md:justify-end">
               Description
-              <img src="/globe2.svg" alt="globe" className="size-4" />
+              <Image src="/globe2.svg" alt="globe" width={16} height={16} className="size-4" />
             </span>
-          </label>
+          </div>
           <div>
             <textarea
               placeholder="Enter Description"
@@ -172,15 +173,15 @@ function OfferDetailsContent() {
           />
         </Row>
 
-        <div className="grid grid-cols-[130px_1fr] items-center gap-3">
-          <label className="text-right text-[11px] font-semibold text-[#546167]">Rank</label>
-          <div className="grid grid-cols-[1fr_160px] overflow-hidden rounded border border-[#d3d9dd] bg-white text-[11px]">
+        <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr] md:items-center md:gap-3">
+          <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">Rank</div>
+          <div className="grid grid-cols-1 overflow-hidden rounded border border-[#d3d9dd] bg-white text-[11px] sm:grid-cols-[1fr_160px]">
             <div className="px-3 py-1.5 text-[#4e5c63]">1</div>
-            <div className="bg-[#edf1f3] px-3 py-1.5 text-right text-[#7d8a91]">of 4 Ranked Offers</div>
+            <div className="bg-[#edf1f3] px-3 py-1.5 text-left text-[#7d8a91] sm:text-right">of 4 Ranked Offers</div>
           </div>
         </div>
 
-        <div className="flex justify-end pr-1 text-[10px] text-[#0b8b8f]">Show more</div>
+        <div className="flex justify-start pr-1 text-[10px] text-[#0b8b8f] sm:justify-end">Show more</div>
 
         <Row label="Internal Name">
           <div className="relative">
@@ -210,9 +211,9 @@ function OfferDetailsContent() {
           </div>
         </Row>
 
-        <div className="grid grid-cols-[130px_1fr] items-center gap-3">
-          <label className="text-right text-[11px] font-semibold text-[#546167]">Optional?</label>
-          <div className="flex items-center gap-2 text-[10px] text-[#9ba6ac]">
+        <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr] md:items-center md:gap-3">
+          <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">Optional?</div>
+          <div className="flex flex-wrap items-center gap-2 text-[10px] text-[#9ba6ac]">
             <span className="inline-flex h-3.5 w-7 items-center rounded-full bg-[#1ba4a7] px-0.5">
               <span className="size-2.5 rounded-full bg-white" />
             </span>
@@ -225,12 +226,12 @@ function OfferDetailsContent() {
             <button type="button" className="inline-flex items-center rounded border border-[#7fc6c5] bg-[#dff2ef] px-2 py-0.5 text-[10px] text-[#1c7d83]">
               Edit JSON
             </button>
-            <div className="text-[10px] text-[#d45f74]">{"{\"push.action\":\"carousel\",\"page\":\"order\"}"}</div>
+            <div className="break-all text-[10px] text-[#d45f74]">{"{\"push.action\":\"carousel\",\"page\":\"order\"}"}</div>
           </div>
         </Row>
       </div>
 
-      <div className="mt-4 flex justify-end">
+      <div className="mt-4 flex justify-start sm:justify-end">
         <button type="button" className="rounded border border-[#7fc6c5] bg-[#dff2ef] px-2 py-0.5 text-[10px] text-[#1c7d83]">
           Save
         </button>
@@ -257,10 +258,10 @@ function CouponRulesContent() {
           <InputLike value="100" />
         </Row>
 
-        <div className="grid grid-cols-[130px_1fr_80px] items-center gap-3">
-          <label className="text-right text-[11px] font-semibold text-[#546167]">Max& Amount</label>
+        <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr_80px] md:items-center md:gap-3">
+          <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">Max& Amount</div>
           <InputLike value="100" />
-          <button type="button" className="w-fit text-[10px] text-[#0b8b8f]">
+          <button type="button" className="w-fit text-[10px] text-[#0b8b8f] md:justify-self-start">
             Override
           </button>
         </div>
@@ -269,10 +270,10 @@ function CouponRulesContent() {
           <SelectLike value="1" />
         </Row>
 
-        <div className="grid grid-cols-[130px_1fr_80px] items-center gap-3">
-          <label className="text-right text-[11px] font-semibold text-[#546167]">POS Code</label>
+        <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr_80px] md:items-center md:gap-3">
+          <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">POS Code</div>
           <InputLike placeholder="Enter POS Code" />
-          <button type="button" className="w-fit text-[10px] text-[#0b8b8f]">
+          <button type="button" className="w-fit text-[10px] text-[#0b8b8f] md:justify-self-start">
             Override
           </button>
         </div>
@@ -285,9 +286,9 @@ function CouponRulesContent() {
           <InputLike value="25.00" />
         </Row>
 
-        <div className="grid grid-cols-[130px_1fr] items-center gap-3">
-          <label className="text-right text-[11px] font-semibold text-[#546167]">Apply Coupon</label>
-          <div className="flex items-center gap-6 text-[10px] text-[#4f5f66]">
+        <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr] md:items-center md:gap-3">
+          <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">Apply Coupon</div>
+          <div className="flex flex-col gap-2 text-[10px] text-[#4f5f66] sm:flex-row sm:flex-wrap sm:items-center sm:gap-6">
             <label className="inline-flex items-center gap-1.5">
               <span className="inline-block size-3 rounded-sm border border-[#c4ccd1] bg-white" />
               In All Stores
@@ -299,9 +300,9 @@ function CouponRulesContent() {
           </div>
         </div>
 
-        <div className="grid grid-cols-[130px_1fr] items-center gap-3">
-          <label className="text-right text-[11px] font-semibold text-[#546167]">Qualify Based On</label>
-          <div className="flex items-center gap-5 text-[10px] text-[#4f5f66]">
+        <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr] md:items-center md:gap-3">
+          <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">Qualify Based On</div>
+          <div className="flex flex-col gap-2 text-[10px] text-[#4f5f66] sm:flex-row sm:flex-wrap sm:items-center sm:gap-5">
             <label className="inline-flex items-center gap-1.5">
               <span className="inline-flex size-3 items-center justify-center rounded-full border border-[#1ba4a7]">
                 <span className="size-1.5 rounded-full bg-[#1ba4a7]" />
@@ -324,7 +325,7 @@ function CouponRulesContent() {
           <SelectLike value="" />
         </Row>
 
-        <div className="flex justify-end">
+        <div className="flex justify-start sm:justify-end">
           <button
             type="button"
             className="inline-flex items-center rounded border border-[#7fc6c5] bg-[#dff2ef] px-2 py-0.5 text-[10px] text-[#1c7d83]"
@@ -336,7 +337,7 @@ function CouponRulesContent() {
       </div>
 
       <div className="mt-4 border-t border-[#e5eaed] pt-3">
-        <div className="flex justify-end">
+        <div className="flex justify-start sm:justify-end">
           <button type="button" className="rounded border border-[#7fc6c5] bg-[#dff2ef] px-2 py-0.5 text-[10px] text-[#1c7d83]">
             Save
           </button>
@@ -356,8 +357,8 @@ function EffectivityPeriodsContent() {
             <span className="ml-1 text-[9px] font-normal text-[#97a3a9]">(Period where we allow members to respond)</span>
           </div>
 
-          <div className="grid grid-cols-[130px_1fr_190px] items-center gap-3">
-            <label className="text-right text-[11px] font-semibold text-[#546167]">Select Period Type</label>
+          <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr_190px] md:items-center md:gap-3">
+            <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">Select Period Type</div>
             <SelectLike value="Same" />
             <span className="text-[11px] text-[#7f8b91]">as Effectivity Period</span>
           </div>
@@ -369,8 +370,8 @@ function EffectivityPeriodsContent() {
             <span className="ml-1 text-[9px] font-normal text-[#97a3a9]">(Period where responses are considered usable)</span>
           </div>
 
-          <div className="grid grid-cols-[130px_1fr_190px] items-center gap-3">
-            <label className="text-right text-[11px] font-semibold text-[#546167]">Select Period Type</label>
+          <div className="grid grid-cols-1 items-start gap-2 md:grid-cols-[130px_1fr_190px] md:items-center md:gap-3">
+            <div className="text-left text-[11px] font-semibold text-[#546167] md:text-right">Select Period Type</div>
             <SelectLike value="Always" />
             <span />
           </div>
@@ -378,7 +379,7 @@ function EffectivityPeriodsContent() {
       </div>
 
       <div className="mt-4 border-t border-[#e5eaed] pt-3">
-        <div className="flex justify-end">
+        <div className="flex justify-start sm:justify-end">
           <button type="button" className="rounded border border-[#7fc6c5] bg-[#dff2ef] px-2 py-0.5 text-[10px] text-[#1c7d83]">
             Save
           </button>

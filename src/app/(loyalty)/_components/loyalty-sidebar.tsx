@@ -56,7 +56,7 @@ function isOffersActive(item: SideNavItem) {
 
 export function LoyaltySidebar() {
   return (
-    <Sidebar collapsible="none" className="w-[230px] border-r bg-white">
+    <Sidebar className="w-[230px] border-r bg-white">
       <SidebarContent>
         <SidebarMenu className="py-3" aria-label="Loyalty sidebar">
           {sideNavItems.map((item) => {

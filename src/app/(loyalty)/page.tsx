@@ -63,15 +63,15 @@ export default function CampaignsPage() {
   const [createOfferActive, setCreateOfferActive] = useState(false);
 
   return (
-    <div className="flex h-full min-h-0 flex-col bg-white px-10 py-8">
+    <div className="flex h-full min-h-0 flex-col bg-white px-4 py-4 sm:px-6 sm:py-6 lg:px-10 lg:py-8">
       <div className="mb-5 flex items-start justify-between">
         <div>
-          <h1 className="text-[48px] leading-none font-bold tracking-tight text-[#3c474d] lg:text-[38px]">Offers</h1>
-          <p className="mt-4 text-[31px] leading-none font-medium tracking-tight text-[#afbbc1] lg:text-[16px]">
+          <h1 className="text-[28px] leading-none font-bold tracking-tight text-[#3c474d] sm:text-[36px] lg:text-[38px]">Offers</h1>
+          <p className="mt-3 text-[13px] leading-snug font-medium tracking-tight text-[#afbbc1] sm:text-[14px] lg:mt-4 lg:text-[16px]">
             Offers are promotions presented to members. Use this screen to create, target, and manage offers.
           </p>
         </div>
-        <div className="mt-12 flex items-center text-[20px] font-semibold tracking-tight text-[#a8b3b9] lg:text-[16px]">
+        <div className="mt-2 flex items-center text-[13px] font-semibold tracking-tight text-[#a8b3b9] sm:mt-4 lg:mt-12 lg:text-[16px]">
           <Rocket className="mr-1.5 size-4" />
           ACTIONS
           <ChevronDown className="ml-1 size-4" strokeWidth={5} absoluteStrokeWidth={true} />
