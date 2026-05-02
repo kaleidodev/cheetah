@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { GripIcon, TextAlignJustifyIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -45,11 +46,9 @@ export function LoyaltyHeader() {
           <GripIcon className="size-7" strokeWidth={2.1} />
         </Button>
 
-        <Link
-          href="/"
-          className="shrink-0 pr-2 text-[20px] leading-none font-medium tracking-tight sm:pr-4 sm:text-[24px] lg:pr-6"
-        >
-          LOYALTY
+        <Link href="/" className="flex shrink-0 items-center gap-2 pr-2 sm:pr-4 lg:pr-6">
+          <Image src="/logo.png" alt="Loyalty logo" width={24} height={24} className="size-6" />
+          <span className="text-[20px] leading-none font-medium tracking-tight sm:text-[24px]">LOYALTY</span>
         </Link>
 
         <nav className="hidden min-w-0 flex-1 items-center overflow-x-auto lg:flex" aria-label="Top navigation">
@@ -100,7 +99,10 @@ export function LoyaltyHeader() {
           </SheetTrigger>
           <SheetContent side="right" className="w-[280px] bg-white p-0" showCloseButton={true}>
             <SheetHeader className="border-b border-[#d9dde0] px-5 py-4 text-left">
-              <SheetTitle className="text-[20px] font-medium tracking-tight text-[#364148]">LOYALTY</SheetTitle>
+              <SheetTitle className="flex items-center gap-2 text-[20px] font-medium tracking-tight text-[#364148]">
+                <Image src="/logo.png" alt="Loyalty logo" width={24} height={24} className="size-6" />
+                <span>LOYALTY</span>
+              </SheetTitle>
               <SheetDescription className="text-[12px] text-[#7a868c]">Navigation</SheetDescription>
             </SheetHeader>
             <nav className="flex flex-col px-3 py-2" aria-label="Mobile top navigation">

@@ -45,16 +45,55 @@ function InputLike({ value, placeholder }: { value?: string; placeholder?: strin
   );
 }
 
-function Chip({ value }: { value: string }) {
+function Chip({ value, onRemove }: { value: string; onRemove?: () => void }) {
   return (
     <span className="inline-flex items-center rounded bg-[#bdeceb] px-2 py-0.5 text-[11px] font-semibold text-[#187e83]">
       {value}
-      <span className="ml-2">×</span>
+      <button type="button" onClick={onRemove} className="ml-2 leading-none">
+        ×
+      </button>
     </span>
   );
 }
 
-function Row({ label, children }: { label: string; children: React.ReactNode }) {
+function InlineTagField({
+  options,
+  selected,
+  placeholder,
+  onChange,
+  onRemove,
+}: {
+  options: string[];
+  selected: string[];
+  placeholder: string;
+  onChange: (value: string) => void;
+  onRemove: (value: string) => void;
+}) {
+  return (
+    <div className="flex min-h-8 flex-wrap items-center gap-2 rounded border border-[#d3d9dd] bg-white px-2 py-1">
+      {selected.map((item) => (
+        <Chip key={item} value={item} onRemove={() => onRemove(item)} />
+      ))}
+      <div className="relative min-w-[110px] flex-1">
+        <select
+          value=""
+          onChange={(e) => onChange(e.target.value)}
+          className="h-6 w-full appearance-none border-0 bg-transparent pr-6 text-[11px] text-[#4e5c63] outline-none"
+        >
+          <option value="">{selected.length ? placeholder : `Select ${placeholder.toLowerCase()}`}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>
+              {option}
+            </option>
+          ))}
+        </select>
+        <ChevronDown className="pointer-events-none absolute top-1/2 right-1 size-4 -translate-y-1/2 text-[#6d7c83]" />
+      </div>
+    </div>
+  );
+}
+
+function Row({ label, children }: { label: React.ReactNode; children: React.ReactNode }) {
   return (
     <div className="grid grid-cols-[130px_1fr] items-center gap-3">
       <label className="text-right text-[11px] font-semibold text-[#546167]">{label}</label>
@@ -64,15 +103,32 @@ function Row({ label, children }: { label: string; children: React.ReactNode }) 
 }
 
 function OfferDetailsContent() {
+  const categoryOptions = ["COUPONOFFER", "FLASH SALE", "MEMBER ONLY", "DIGITAL DEAL"];
+  const tagOptions = ["TRENDING", "SUMMER", "FEATURED", "LIMITED", "WELCOME"];
+  const [categories, setCategories] = useState(["COUPONOFFER"]);
+  const [tags, setTags] = useState(["FEATURED"]);
+
   return (
     <div className="border-x border-b border-[#d5dcdf] bg-white p-4">
       <div className="space-y-3">
-        <Row label="Display Name 🌎">
+        <Row
+          label={
+            <span className="inline-flex items-center justify-end gap-1">
+              Display Name
+              <img src="/globe2.svg" alt="globe" className="size-4" />
+            </span>
+          }
+        >
           <Input value="July 5% Off" readOnly className="h-8 border-[#d3d9dd] bg-white text-[12px]" />
         </Row>
 
         <div className="grid grid-cols-[130px_1fr] items-start gap-3">
-          <label className="pt-2 text-right text-[11px] font-semibold text-[#546167]">Description 🌎</label>
+          <label className="pt-2 text-right text-[11px] font-semibold text-[#546167]">
+            <span className="inline-flex items-center justify-end gap-1">
+              Description
+              <img src="/globe2.svg" alt="globe" className="size-4" />
+            </span>
+          </label>
           <div>
             <textarea
               placeholder="Enter Description"
@@ -91,15 +147,29 @@ function OfferDetailsContent() {
         </Row>
 
         <Row label="Categories">
-          <div className="flex h-8 items-center rounded border border-[#d3d9dd] bg-white px-2">
-            <Chip value="COUPONOFFER" />
-          </div>
+          <InlineTagField
+            options={categoryOptions.filter((item) => !categories.includes(item))}
+            selected={categories}
+            placeholder=""
+            onChange={(value) => {
+              if (!value) return;
+              setCategories([...categories, value]);
+            }}
+            onRemove={(value) => setCategories(categories.filter((item) => item !== value))}
+          />
         </Row>
 
         <Row label="Tags">
-          <div className="flex h-8 items-center rounded border border-[#d3d9dd] bg-white px-2">
-            <Chip value="COUPONOFFER" />
-          </div>
+          <InlineTagField
+            options={tagOptions.filter((item) => !tags.includes(item))}
+            selected={tags}
+            placeholder=""
+            onChange={(value) => {
+              if (!value) return;
+              setTags([...tags, value]);
+            }}
+            onRemove={(value) => setTags(tags.filter((item) => item !== value))}
+          />
         </Row>
 
         <div className="grid grid-cols-[130px_1fr] items-center gap-3">

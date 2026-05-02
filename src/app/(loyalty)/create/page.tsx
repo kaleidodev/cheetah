@@ -10,6 +10,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { DashboardContent } from "./_components/dashboard";
@@ -28,24 +29,27 @@ const tabs = [
 ];
 
 export default function CreateOfferPage() {
+  const router = useRouter();
+
   return (
     <div className="flex h-full min-h-0 flex-col bg-white px-8 py-6 text-[#3f4a4f]">
       <h1 className="text-[22px] leading-none font-bold tracking-tight">July 5% Off</h1>
 
-      <button type="button" className="mt-3 inline-flex w-fit items-center text-[13px] font-medium text-[#0a8a8f]">
+      <button type="button" onClick={() => router.back()} className="mt-3 inline-flex w-fit items-center text-[13px] font-medium text-[#0a8a8f]">
         <ChevronLeft className="mr-1 size-4" />
         Back to offers
       </button>
 
       <div className="mt-4 rounded-sm bg-[#f3f4f5] p-4">
         <div className="flex flex-wrap items-start gap-5">
-          <div className="w-[90px] border border-[#c9ced2] bg-white">
+          <label className="block w-[90px] cursor-pointer border border-[#c9ced2] bg-white">
+            <input type="file" accept="image/*" className="hidden" />
             <div className="h-9 bg-[#c8c8c8]" />
             <div className="flex h-11 flex-col items-center justify-center bg-[#979797] text-white">
               <Upload className="size-4" />
               <span className="mt-1 text-[10px] font-semibold">Upload</span>
             </div>
-          </div>
+          </label>
 
           <div className="min-w-[220px] flex-1">
             <h2 className="text-[13px] font-semibold text-[#3f4a4f]">July 5% Off</h2>

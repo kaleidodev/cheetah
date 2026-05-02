@@ -1,7 +1,8 @@
 "use client";
 
-import { CalendarDays, Eye, EyeOff, Search } from "lucide-react";
+import { CalendarDays, ChevronLeft, Eye, EyeOff, Search } from "lucide-react";
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Bar, CartesianGrid, ComposedChart, Line, LineChart, XAxis, YAxis } from "recharts";
 
 import { Calendar } from "@/components/ui/calendar";
@@ -152,6 +153,7 @@ function DateRangePopover({
 }
 
 export function DashboardContent() {
+  const router = useRouter();
   const initialRange: DateRange = { from: new Date(2023, 9, 14), to: new Date(2023, 9, 18) };
   const [summaryView, setSummaryView] = useState(false);
   const [dateOpen, setDateOpen] = useState(false);
@@ -208,7 +210,8 @@ export function DashboardContent() {
 
       {insightTab === "overview" ? <PerformanceOverview summaryView={summaryView} /> : <EngagementInsights />}
 
-      <button type="button" className="inline-flex w-fit items-center text-[13px] font-medium text-[#0a8a8f]">
+      <button type="button" onClick={() => router.back()} className="inline-flex w-fit items-center text-[13px] font-medium text-[#0a8a8f]">
+        <ChevronLeft className="mr-1 size-4" />
         Back to offers
       </button>
     </div>
